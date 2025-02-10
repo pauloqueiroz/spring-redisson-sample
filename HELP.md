@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'br.com.example.redisson-sample' is invalid and this project uses 'br.com.example.redisson_sample' instead.
+* The original package name 'br.com.example.redisson-sample' is invalid and this project uses 'br.com.example.sample' instead.
 
 # Getting Started
 
