@@ -5,6 +5,9 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class RedisService {
 
@@ -16,6 +19,7 @@ public class RedisService {
     // Create operation
     public void createUser(String userId, String userName) {
         RMap<String, String> map = redissonClient.getMap(MAP_NAME);
+        map.expire(Duration.ofMinutes(10));
         map.put(userId, userName);
     }
 
