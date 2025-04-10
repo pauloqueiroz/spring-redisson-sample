@@ -18,4 +18,10 @@ public class RedissonConfig {
 
         return org.redisson.Redisson.create(config);
     }
+
+    @Bean(destroyMethod = "shutdown")
+    public RedissonClient redissonClient() throws Exception {
+        Config config = Config.fromYAML(RedisConfig.class.getClassLoader().getResource("redisson.yaml"));
+        return Redisson.create(config);
+    }
 }
