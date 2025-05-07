@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Server port="8005" shutdown="SHUTDOWN">
+    <Service name="Catalina">
+
+        <!-- HTTP Connector (optional) -->
+        <Connector port="8080" protocol="HTTP/1.1"
+                   connectionTimeout="20000"
+                   redirectPort="443" />
+
+        <!-- HTTPS Connector -->
+        <Connector port="443"
+                   protocol="org.apache.coyote.http11.Http11NioProtocol"
+                   SSLEnabled="true"
+                   maxThreads="500"
+                   minSpareThreads="50"
+                   maxConnections="10000"
+                   acceptCount="1000"
+                   enableLookups="false"
+                   compression="on"
+                   compressableMimeType="text/html,text/xml,text/plain,application/json"
+                   scheme="https"
+                   secure="true"
+                   clientAuth="false"
+                   sslProtocol="TLS"
+                   keystoreFile="/opt/tomcat/conf/keystore.p12"
+                   keystoreType="PKCS12"
+                   keystorePass="yourPassword" />
+
+
+        <Engine name="Catalina" defaultHost="localhost">
+            <Host name="localhost"  appBase="webapps" unpackWARs="true" autoDeploy="true">
+                <Context path="" docBase="ROOT"/>
+            </Host>
+        </Engine>
+    </Service>
+</Server>

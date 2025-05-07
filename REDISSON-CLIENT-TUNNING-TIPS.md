@@ -90,3 +90,9 @@ Redis latency spikes
 Adjust pool sizes gradually if needed (e.g., try 192 or 256 if still saturated)
 
 Want help writing a JMeter test plan that simulates this Redis usage (e.g., reads/writes to a map or bucket)?
+
+## Running With docker
+```bash
+docker build -t tomcat-https .
+docker run -e JAVA_OPTS="-Xmx1g -Xms512m -XX:+UseG1GC" -p 443:443 my-tomcat-https
+```
