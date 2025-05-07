@@ -1,33 +1,35 @@
-# Base image with Java 8 and Tomcat 8
-FROM tomcat:8-jdk8-temurin
+FROM eclipse-temurin:8-jdk-alpine
 
-# Create a non-root user and group
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# Install Tomcat manually for more control
+ENV TOMCAT_VERSION=8.5.98
+ENV CATALINA_HOME=/opt/tomcat
+ENV PATH=$CATALINA_HOME/bin:$PATH
 
-# Clean default webapps to harden the image
-RUN rm -rf /usr/local/tomcat/webapps/*
+# Install curl and openssl
+RUN apk update && apk add --no-cache curl openssl tar && \
+    mkdir -p $CATALINA_HOME && \
+    curl -fSL https://downloads.apache.org/tomcat/tomcat-8/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz \
+    | tar -xz --strip-components=1 -C $CATALINA_HOME && \
+    rm -rf $CATALINA_HOME/webapps/*
 
-# Set working directory
-WORKDIR /usr/local/tomcat
+# Copy WAR into ROOT context
+COPY your-app.war $CATALINA_HOME/webapps/ROOT.war
 
-# Copy your WAR file (rename to ROOT.war to run at root context)
-COPY your-app.war ./webapps/ROOT.war
-
-# Set environment variable for custom JVM options (e.g., -Xmx, -Xms)
-ENV JAVA_OPTS=""
-
-# Health check for ECS/containers
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:8080/ || exit 1
-
-# Set permissions
-RUN chown -R appuser:appuser /usr/local/tomcat
+# Create non-root user
+RUN addgroup -S appuser && adduser -S -G appuser appuser && \
+    chown -R appuser:appuser $CATALINA_HOME
 
 # Use non-root user
 USER appuser
 
-# Expose Tomcat port
-EXPOSE 8080
+# Expose port 443 for HTTPS (assumes reverse proxy or TLS setup inside container)
+EXPOSE 443
 
-# Start Tomcat using exec form for proper signal handling
-CMD ["sh", "-c", "exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /usr/local/tomcat/bin/bootstrap.jar"]
+# Customizable JVM options
+ENV JAVA_OPTS=""
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -fk https://localhost:443/ || exit 1
+
+CMD ["sh", "-c", "exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar $CATALINA_HOME/bin/bootstrap.jar"]
