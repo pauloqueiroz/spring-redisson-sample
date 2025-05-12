@@ -11,16 +11,11 @@ Consider enabling Redisson’s built-in monitoring for runtime diagnostics.
 
 Would you like a version of this config for single-node ElastiCache (non-cluster) or sentinel mode instead? Or should I tailor the pool sizes based on your expected QPS / thread count?
 
-Você disse:
-i expect to suport 300 threads in a test with jmeter
-
-
-## O ChatGPT disse:
-Nice — planning for 300 concurrent threads (via JMeter) means you’ll need your Redisson connection pools sized appropriately to avoid connection contention, timeouts, or stalls.
+Nice — planning for x concurrent threads (via JMeter) means you’ll need your Redisson connection pools sized appropriately to avoid connection contention, timeouts, or stalls.
 
 Here’s how to tune your redisson.yaml for that workload 👇
 
-##  🔢 Key Considerations for 300 Threads
+##  🔢 Key Considerations for x Threads
 Each thread may hold at least one connection simultaneously, depending on your app logic and Redis usage pattern.
 
 Redis itself is single-threaded, but you’ll likely be hitting multiple nodes in an ElastiCache Cluster (especially with readMode: SLAVE).
